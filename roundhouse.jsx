@@ -1,7 +1,7 @@
 /*
-* ROUNDHOUSE    
-* Simple: round all objects to nearest whole number
-* Caveats: •currently forces to pixels
+* FINESSE
+* Simple: Tweaks objects to fit on a standard pixel grid, for web design purposes
+* Known Issue: Forces use of pixels
 */
 
 //set to false to hide annoying alerts
@@ -9,7 +9,7 @@ var debug = false;
 
 
 //checks if a doc is open
-if (  app.documents.length > 0 ){
+if ( app.documents.length > 0 ){
     main();
 } else {
     alert("Please open a file before using Roundhouse")
@@ -33,8 +33,9 @@ function main() {
     for (var j = 0; j < myPageItems.length; j++ ) {
         if (!(myPageItems[j].locked)) // Skip locked objects
             {
-                var k = myPageItems[j].getElements()[0].contentType;
-                if (k == '1952412773') myPageItems[j].fit(FitOptions.frameToContent); // Fit text frame to content
+                var k = myPageItems[j].constructor.name;
+                if (debug) alert(k);
+                if (k == 'TextFrame') myPageItems[j].fit(FitOptions.frameToContent); // Fit text frame to content
                 roundPageItem(myPageItems[j],k); // Round object dimensions
             }
     }
@@ -45,7 +46,7 @@ function main() {
 //main rounding function
 function roundPageItem(pageItem,itemType) {
     
-    if (debug) alert('was:'+ pageItem.visibleBounds);
+    if (debug) alert('Old dimensions\n'+ pageItem.visibleBounds);
     
     //get and round all pageItem points
     var y1 = Math.round(pageItem.visibleBounds[0]);
@@ -56,9 +57,6 @@ function roundPageItem(pageItem,itemType) {
     //update pageItem points
     
     pageItem.visibleBounds = [y1,x1,y2,x2];
-    if (itemType == '1952412773') {
-      if (pageItem.overflows) { pageItem.visibleBounds = [y1,x1,y2+1,x2] }
-    }
-    
-    if (debug) alert('now:'+ pageItem.visibleBounds);
+    if (itemType == 'TextFrame' && pageItem.overflows) { pageItem.visibleBounds = [y1,x1,y2+1,x2+1] }
+    if (debug) alert('New dimensions\n'+ pageItem.visibleBounds);
 }
